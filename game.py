@@ -2,6 +2,7 @@ import sys
 
 import pygame
 import gamestate
+import render
 
 import server
 import threading
@@ -44,6 +45,7 @@ class AticAtacClient(threading.Thread):
         self.sock.connect((self.ip, self.port))
         self.sock.setblocking(False)
         self.peer = server.ConnectedPeer(self.sock)
+        self.failure = False # This will be set to True when a fatal network error is detected
 
         while self.active:
 
@@ -67,6 +69,8 @@ class AticAtacClient(threading.Thread):
 
                 except server.CloseConnectionException:
                     print('Invalid packet :( (Client-Side)')
+                    self.failure = True
+                    self.active = False
 
             for s in writable:
                 if len(self.peer.tosend) > 0:
@@ -100,6 +104,10 @@ client = AticAtacClient('127.0.0.1', 13225)
 client.start()
 
 while True:
+    if client.active is False and client.failure:
+        client.join()
+        sys.exit()
+
     currentcontrols.clear()
 
     for event in pygame.event.get():
@@ -170,7 +178,8 @@ while True:
     screen.fill(WHITE)
 
     for obj in currentobjs:
-        screen.fill(GREEN, pygame.Rect(obj.x, obj.y, 16, 16))
+
+        render.renderdict[obj.__class__](screen, obj)
 
 
     pygame.display.flip()
