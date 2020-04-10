@@ -147,7 +147,7 @@ while True:
                 obj.x += v[0]
                 obj.y += v[1]
 
-            if changed: client.outgoingqueue.put(server.PlayerChangePos(obj.x, obj.y))
+            if changed: client.outgoingqueue.put(server.PlayerChangePos(obj.x, obj.y, currentroom))
             break
 
 
@@ -155,19 +155,37 @@ while True:
         try:
             pack = client.incomingqueue.get_nowait()
             if isinstance(pack, server.SendObjectPacket):
-                obj = core.PlayerObj(pack.x, pack.y)
+                # pack.type
+                obj = core.gobjTypes[pack.type].generateBasic(pack.x, pack.y)
                 obj.id = pack.uid
                 currentobjs.append(obj)
 
             elif isinstance(pack, server.SendControlledUpdate):
                 currentcontrolled = pack.objectid
-                print(str(currentcontrolled))
 
             elif isinstance(pack, server.UpdateObjectPosition):
                 for obj in currentobjs:
                     if obj.id == pack.uid:
                         obj.x = pack.x
                         obj.y = pack.y
+
+            elif isinstance(pack, server.RemoveObjectPacket):
+                toremove = None
+                for obj in currentobjs:
+                    if obj.id == pack.uid:
+                        toremove = obj
+                        break
+
+                if toremove == None:
+                    print('Warning! No object to remove!')
+
+                else:
+                    currentobjs.remove(toremove)
+
+            elif isinstance(pack, server.SwitchRoomPacket):
+                currentobjs.clear()
+                currentcontrolled = -1
+                currentroom = pack.roomid
 
 
         except queue.Empty:

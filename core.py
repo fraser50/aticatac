@@ -1,14 +1,16 @@
 import server
 import random
+from pygame.rect import Rect
 
 class Room():
-    def __init__(self, roomtype, roomid):
+    def __init__(self, roomtype, roomid, game):
         self.roomtype = roomtype
         self.roomobjects = []
-        self.toremove = []
+        self.game = game
         self.roomid = roomid
         self.players = [] # A list of players that are currently observing this room
         self.newobjects = []
+        self.todelete = []
 
     def addObject(self, gobj):
         idtaken = True
@@ -26,6 +28,8 @@ class Room():
         self.roomobjects.append(gobj)
         self.newobjects.append(gobj)
 
+    def deleteObject(self, gobj):
+        self.todelete.append(gobj)
 
 class GameObject():
     def __init__(self, x, y, objid=-1):
@@ -37,6 +41,9 @@ class GameObject():
     @classmethod
     def generateBasic(cls, x, y):
         raise NotImplementedError
+
+    def update(self, room):
+        pass
 
     @property
     def x(self):
@@ -73,7 +80,25 @@ class Door(GameObject):
     def generateBasic(cls, x, y):
         return Door(x, y, None)
 
+    def update(self, room):
+        for obj in room.roomobjects:
+            if isinstance(obj, PlayerObj):
+                prect = Rect(obj.x ,obj.y, 16, 16)
+                myrect = Rect(self.x, self.y, 16, 16)
+
+                if myrect.colliderect(prect):
+                    print('Collision')
+                    for p in room.players:
+                        if p.currobj == obj:
+                            p.changeRoom(room.game.rooms[self.roomtogo])
+
+
 gobjTypes = [
     PlayerObj,
     Door
 ]
+
+gobjDict = {
+    PlayerObj : 0,
+    Door : 1
+}
