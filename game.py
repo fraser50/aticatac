@@ -4,7 +4,6 @@ import pygame
 import gamestate
 import render
 
-import server
 import threading
 
 import socket
@@ -13,6 +12,7 @@ import select
 import queue
 
 import core
+import net
 
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
@@ -46,7 +46,7 @@ class AticAtacClient(threading.Thread):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.connect((self.ip, self.port))
         self.sock.setblocking(False)
-        self.peer = server.ConnectedPeer(self.sock)
+        self.peer = net.ConnectedPeer(self.sock)
         self.failure = False # This will be set to True when a fatal network error is detected
 
         while self.active:
@@ -64,7 +64,7 @@ class AticAtacClient(threading.Thread):
                 packet = None
 
                 try:
-                    packet = server.handleRead(s, self.peer)
+                    packet = net.handleRead(s, self.peer)
 
                     if packet is not None:
                         self.peer.incoming.append(packet)
@@ -149,29 +149,29 @@ while True:
                 obj.x += v[0]
                 obj.y += v[1]
 
-            if changed: client.outgoingqueue.put(server.PlayerChangePos(obj.x, obj.y, currentroom))
+            if changed: client.outgoingqueue.put(net.PlayerChangePos(obj.x, obj.y, currentroom))
             break
 
 
     while True:
         try:
             pack = client.incomingqueue.get_nowait()
-            if isinstance(pack, server.SendObjectPacket):
+            if isinstance(pack, net.SendObjectPacket):
                 # pack.type
                 obj = core.gobjTypes[pack.type].generateBasic(pack.x, pack.y)
                 obj.id = pack.uid
                 currentobjs.append(obj)
 
-            elif isinstance(pack, server.SendControlledUpdate):
+            elif isinstance(pack, net.SendControlledUpdate):
                 currentcontrolled = pack.objectid
 
-            elif isinstance(pack, server.UpdateObjectPosition):
+            elif isinstance(pack, net.UpdateObjectPosition):
                 for obj in currentobjs:
                     if obj.id == pack.uid:
                         obj.x = pack.x
                         obj.y = pack.y
 
-            elif isinstance(pack, server.RemoveObjectPacket):
+            elif isinstance(pack, net.RemoveObjectPacket):
                 toremove = None
                 for obj in currentobjs:
                     if obj.id == pack.uid:
@@ -184,7 +184,7 @@ while True:
                 else:
                     currentobjs.remove(toremove)
 
-            elif isinstance(pack, server.SwitchRoomPacket):
+            elif isinstance(pack, net.SwitchRoomPacket):
                 currentobjs.clear()
                 currentcontrolled = -1
                 currentroom = pack.roomid

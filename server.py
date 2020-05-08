@@ -1,225 +1,21 @@
 import threading
 import socket
 import select
-import struct
 import core
-import binascii
 import random
 import queue
 from time import sleep
+import net
 
 allowedchars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_'
 
-magicbytes = bytes(bytearray.fromhex('4861'))
 
-class ConnectedPeer():
-    def __init__(self, conn):
-        self.conn = conn
-
-        self.tosend = b''
-
-        self.currentpos = 0
-        self.len = 0
-        self.currdata = b''
-        self.incoming = []
-
-    def sendPacket(self, pack):
-        self.tosend += magicbytes
-        packbytes = pack.toBytes()
-        self.tosend += int(1 + len(packbytes)).to_bytes(2, byteorder='big')
-        self.tosend += pack.packetid.to_bytes(1, byteorder='big')
-        self.tosend += packbytes
-
-class Player(ConnectedPeer):
+class Player(net.ConnectedPeer):
     def __init__(self, name, conn, gp):
         super().__init__(conn)
         self.name = name
         self.gp = gp
         self.controlledobject = -1
-
-
-class CloseConnectionException(Exception):
-    pass
-
-
-class Packet():
-    def __init__(self, packetid):
-        self.packetid = packetid
-
-    def toBytes(self):
-        raise NotImplementedError()
-
-    @classmethod
-    def fromBytes(cls, bstr):
-        raise NotImplementedError()
-
-
-class SetNamePacket(Packet):
-    def __init__(self, name):
-        super().__init__(0)
-        self.name = name
-
-
-class PlayerChangePos(Packet):
-
-    def __init__(self, x, y, rid):
-        super().__init__(1)
-        self.x = x
-        self.y = y
-        self.rid = rid
-
-    def toBytes(self):
-        return struct.pack('!iiH', self.x, self.y, self.rid)
-
-    @classmethod
-    def fromBytes(cls, bstr):
-        x, y, rid = struct.unpack('!iiH', bstr)
-        return PlayerChangePos(x, y, rid)
-
-
-class SendObjectPacket(Packet):
-    def __init__(self, x, y, type, uid):
-        super().__init__(2)
-
-        self.x = x
-        self.y = y
-        self.type = type
-        self.uid = uid
-
-    def toBytes(self):
-        return struct.pack('!iibH', self.x, self.y, self.type, self.uid)
-
-    @classmethod
-    def fromBytes(cls, bstr):
-        x, y, type, uid = struct.unpack('!iibH', bstr)
-        return SendObjectPacket(x, y, type, uid)
-
-
-class SendControlledUpdate(Packet):
-    def __init__(self, objectid):
-        super().__init__(3)
-
-        self.objectid = objectid
-
-    def toBytes(self):
-        return struct.pack('!H', self.objectid)
-
-    @classmethod
-    def fromBytes(cls, bstr):
-        return SendControlledUpdate(struct.unpack('!H', bstr)[0])
-
-class UpdateObjectPosition(Packet):
-    def __init__(self, uid, x, y):
-        super().__init__(4)
-
-        self.uid = uid
-        self.x = x
-        self.y = y
-
-    def toBytes(self):
-        return struct.pack('!Hii', self.uid, self.x, self.y)
-
-    @classmethod
-    def fromBytes(cls, bstr):
-        uid, x, y = struct.unpack('!Hii', bstr)
-        return UpdateObjectPosition(uid, x, y)
-
-class RemoveObjectPacket(Packet):
-    def __init__(self, uid):
-        super().__init__(5)
-        self.uid = uid
-
-    def toBytes(self):
-        return struct.pack('!H', self.uid)
-
-    @classmethod
-    def fromBytes(cls, bstr):
-        return RemoveObjectPacket(struct.unpack('!H', bstr)[0])
-
-
-class SwitchRoomPacket(Packet):
-    def __init__(self, roomid, roomtype):
-        super().__init__(6)
-
-        self.roomid = roomid
-        self.roomtype = roomtype
-
-    def toBytes(self):
-        return struct.pack('!Hb',self.roomid, self.roomtype)
-
-    @classmethod
-    def fromBytes(cls, bstr):
-        roomid, roomtype = struct.unpack('!Hb', bstr)
-        return SwitchRoomPacket(roomid, roomtype)
-
-
-packet_types = [
-    SetNamePacket,
-    PlayerChangePos,
-    SendObjectPacket,
-    SendControlledUpdate,
-    UpdateObjectPosition,
-    RemoveObjectPacket,
-    SwitchRoomPacket
-]
-
-def handleRead(s, p):
-    torecv = 0
-
-    if p.len == 0:
-        if len(p.currdata) < 2:
-            torecv = 2 - len(p.currdata)
-
-    else:
-        torecv = p.len - p.currentpos + 4
-        if torecv > 1024: torecv = 1024
-
-    datareceived = None
-
-    try:
-        datareceived = s.recv(torecv)
-        p.currentpos += len(datareceived)
-
-    except socket.error:
-        return
-
-    if len(datareceived) == 0:
-        #self.active = False
-        print('Closing connection...')
-        raise CloseConnectionException()  # TODO: disconnect client
-
-    p.currdata += datareceived
-
-    if p.currentpos == 2:
-        if p.currdata != magicbytes:
-            raise CloseConnectionException()  # TODO: disconnect client
-
-        else:
-            p.currdata = b''
-
-    if p.currentpos == 4:
-        p.len = int.from_bytes(p.currdata, byteorder='big')
-        p.currdata = b''
-
-    if p.len == len(p.currdata) and p.len > 0:
-
-        packetid = p.currdata[0]
-        p.currdata = p.currdata[1:]
-
-        packet = None
-
-        if packetid < len(packet_types):
-            try:
-                packet = packet_types[packetid].fromBytes(p.currdata)
-
-            except:
-                pass
-
-        p.currentpos = 0
-        p.len = 0
-        p.currdata = b''
-
-        return packet
 
 
 class GamePlayer():
@@ -239,11 +35,11 @@ class GamePlayer():
         self.room.players.append(self)
         self.currobj = core.PlayerObj(random.randrange(0, x), random.randrange(0, y))
         room.addObject(self.currobj)
-        self.tosend.put(SwitchRoomPacket(room.roomid, room.roomtype))
-        self.tosend.put(SendControlledUpdate(self.currobj.id))
+        self.tosend.put(net.SwitchRoomPacket(room.roomid, room.roomtype))
+        self.tosend.put(net.SendControlledUpdate(self.currobj.id))
         for obj in self.room.roomobjects:
             if obj != self.currobj:
-                self.tosend.put(SendObjectPacket(obj.x, obj.y, core.gobjDict[obj.__class__], obj.id))
+                self.tosend.put(net.SendObjectPacket(obj.x, obj.y, core.gobjDict[obj.__class__], obj.id))
 
 
 class AticAtacGame(threading.Thread):
@@ -283,7 +79,7 @@ class AticAtacGame(threading.Thread):
             for p in self.players:
                 while not p.tohandle.empty():
                     packet = p.tohandle.get_nowait()
-                    if isinstance(packet, PlayerChangePos):
+                    if isinstance(packet, net.PlayerChangePos):
                         if p.currobj is not None and packet.rid == p.room.roomid:
                             p.currobj.x = packet.x
                             p.currobj.y = packet.y
@@ -293,7 +89,7 @@ class AticAtacGame(threading.Thread):
                 for obj in room.todelete:
                     room.roomobjects.remove(obj)
 
-                    rop = RemoveObjectPacket(obj.id)
+                    rop = net.RemoveObjectPacket(obj.id)
 
                     for p in room.players:
                         p.tosend.put_nowait(rop)
@@ -302,7 +98,7 @@ class AticAtacGame(threading.Thread):
 
                 for obj in room.newobjects:
                     for p in room.players:
-                        p.tosend.put_nowait(SendObjectPacket(obj.x, obj.y, core.gobjDict[obj.__class__], obj.id))
+                        p.tosend.put_nowait(net.SendObjectPacket(obj.x, obj.y, core.gobjDict[obj.__class__], obj.id))
 
                 room.newobjects.clear()
 
@@ -313,7 +109,7 @@ class AticAtacGame(threading.Thread):
                         obj.poschange = False
                         for p in room.players:
                             if p.currobj != obj:
-                                p.tosend.put(UpdateObjectPosition(obj.id, obj.x, obj.y))
+                                p.tosend.put(net.UpdateObjectPosition(obj.id, obj.x, obj.y))
 
 
 
@@ -368,9 +164,9 @@ class AticAtacServer(threading.Thread):
                     packet = None
 
                     try:
-                        packet = handleRead(s, p)
+                        packet = net.handleRead(s, p)
 
-                    except CloseConnectionException:
+                    except net.CloseConnectionException:
                         self.todelete.append(p)
                         self.gamethread.offlineplayers.put_nowait(p.gp)
 

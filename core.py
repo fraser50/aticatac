@@ -1,4 +1,3 @@
-import server
 import random
 from pygame.rect import Rect
 
