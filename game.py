@@ -24,6 +24,8 @@ WHITE = (255, 255, 255)
 roomarea_width  = 512
 roomarea_height = 512
 
+PLAYER_SPEED = 4
+
 pygame.init()
 
 currentcontrolled = -1
@@ -128,16 +130,16 @@ while True:
     keys = pygame.key.get_pressed()
 
     if keys[pygame.K_LEFT]:
-        currentcontrols.add((-2, 0))
+        currentcontrols.add((-PLAYER_SPEED, 0))
 
     if keys[pygame.K_RIGHT]:
-        currentcontrols.add((2, 0))
+        currentcontrols.add((PLAYER_SPEED, 0))
 
     if keys[pygame.K_UP]:
-        currentcontrols.add((0, -2))
+        currentcontrols.add((0, -PLAYER_SPEED))
 
     if keys[pygame.K_DOWN]:
-        currentcontrols.add((0, 2))
+        currentcontrols.add((0, PLAYER_SPEED))
 
     for obj in currentobjs:
         if obj.id == currentcontrolled:

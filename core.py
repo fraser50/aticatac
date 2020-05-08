@@ -83,11 +83,10 @@ class Door(GameObject):
     def update(self, room):
         for obj in room.roomobjects:
             if isinstance(obj, PlayerObj):
-                prect = Rect(obj.x ,obj.y, 16, 16)
+                prect = Rect(obj.x ,obj.y, 64, 64)
                 myrect = Rect(self.x, self.y, 16, 16)
 
                 if myrect.colliderect(prect):
-                    print('Collision')
                     for p in room.players:
                         if p.currobj == obj:
                             p.changeRoom(room.game.rooms[self.roomtogo])

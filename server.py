@@ -230,14 +230,14 @@ class GamePlayer():
         self.tosend = queue.Queue()
         self.currobj = None
 
-    def changeRoom(self, room):
+    def changeRoom(self, room, x=496, y=496):
         if self.room != None:
             self.room.deleteObject(self.currobj)
             self.room.players.remove(self)
 
         self.room = room
         self.room.players.append(self)
-        self.currobj = core.PlayerObj(random.randrange(0, 496), random.randrange(0, 496))
+        self.currobj = core.PlayerObj(random.randrange(0, x), random.randrange(0, y))
         room.addObject(self.currobj)
         self.tosend.put(SwitchRoomPacket(room.roomid, room.roomtype))
         self.tosend.put(SendControlledUpdate(self.currobj.id))
