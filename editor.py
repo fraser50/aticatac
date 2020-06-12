@@ -35,6 +35,13 @@ doorColours = [
     BLUE
 ]
 
+doorToDisp = [
+    (0, -1),
+    (1, 0),
+    (0, 1),
+    (-1, 0)
+]
+
 def findDoors(room):
     return (
         pygame.Rect(((room.x * EDIT_ROOM_SIZE) - cameraX) + ((EDIT_ROOM_SIZE / 2) - 8),
@@ -47,7 +54,8 @@ def findDoors(room):
                     ((room.y * EDIT_ROOM_SIZE) - cameraY + EDIT_ROOM_SIZE - 16), 16, 16),
 
         pygame.Rect(((room.x * EDIT_ROOM_SIZE) - cameraX - 0),
-                    ((room.y * EDIT_ROOM_SIZE) - cameraY) + ((EDIT_ROOM_SIZE / 2) - 8), 16, 16)
+                    ((room.y * EDIT_ROOM_SIZE) - cameraY
+                     ) + ((EDIT_ROOM_SIZE / 2) - 8), 16, 16)
     )
 
 clock = pygame.time.Clock()
@@ -82,6 +90,28 @@ while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1: # Left click
+                room = gamemap.getRoom(selectedX, selectedY)
+                if room == None or selectedDoor == -1: continue
+                disp = doorToDisp[selectedDoor]
+
+                newX = room.x + disp[0]
+                newY = room.y + disp[1]
+
+                if gamemap.getRoom(newX, newY) is None:
+                    possibleTypes = core.roomTypes[1:]
+                    requiredDoor = (selectedDoor + 2) % 4
+                    possibleTypes = list(filter(lambda x: x[0][requiredDoor] >= 0, zip(possibleTypes, range(len(possibleTypes)))))
+                    gamemap.setRoom(core.RoomData(newX, newY, possibleTypes[0][1] + 1))
+
+                else:
+                    room.doors[selectedDoor] += 1
+                    room.doors[selectedDoor] %= len(doorColours)
+                    gamemap.getRoom(newX, newY).doors[(selectedDoor + 2) % 4] = room.doors[selectedDoor]
+
+
 
     keys = pygame.key.get_pressed()
 
@@ -122,7 +152,7 @@ while True:
 
         for x in range(4):
             if room.doors[x] >= 0:
-                if selectedDoor == x:
+                if selectedDoor == x and room == gamemap.getRoom(selectedX, selectedY):
                     pygame.draw.rect(screen, GREY, doors[selectedDoor])
 
                 else:
