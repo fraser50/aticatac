@@ -100,3 +100,52 @@ gobjDict = {
     PlayerObj : 0,
     Door : 1
 }
+
+roomTypes = [
+    [0, -1, 0, 0],
+    [-1, 0, -1, 0],
+    [0, -1, 0,-1],
+    [0, 0, 0, -1],
+    [0, -1, 0, 0],
+    [0, 0, 0, 0]
+]
+class RoomData():
+    def __init__(self, x, y, type):
+        self.x = x
+        self.y = y
+        self.type = type
+        #self.north = roomTypes[type][0]
+        #self.east = roomTypes[type][1]
+        #self.south = roomTypes[type][2]
+        #self.west = roomTypes[type][3]
+        self.doors = roomTypes[type][:]
+        self.trap = -1
+        self.passage1 = -1
+        self.passage2 = -1
+
+
+class GameMap():
+    def __init__(self, startroom=True):
+        self.rooms = []
+        self.coordToRoom = {}
+
+        if startroom:
+            self.setRoom(RoomData(0, 0, 0))
+
+    def setRoom(self, room):
+        if (room.x, room.y) in self.coordToRoom.keys():
+            self.rooms.remove(room)
+
+        self.rooms.append(room)
+        self.coordToRoom[(room.x, room.y)] = room
+
+    def delRoom(self, room):
+        self.rooms.remove(room)
+        del self.coordToRoom[(room.x, room.y)]
+
+    def getRoom(self, x, y):
+        if (x, y) in self.coordToRoom.keys():
+            return self.coordToRoom[(x, y)]
+
+        else:
+            return None
