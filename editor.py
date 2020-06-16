@@ -153,7 +153,12 @@ while True:
         for x in range(4):
             if room.doors[x] >= 0:
                 if selectedDoor == x and room == gamemap.getRoom(selectedX, selectedY):
-                    pygame.draw.rect(screen, GREY, doors[selectedDoor])
+
+                    chosenColour = tuple(
+                        map(lambda x: (200 / 255) * x, doorColours[room.doors[x]])
+                    )
+
+                    pygame.draw.rect(screen, chosenColour, doors[x])
 
                 else:
                     pygame.draw.rect(screen, doorColours[room.doors[x]], doors[x])
