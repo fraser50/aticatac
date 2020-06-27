@@ -58,6 +58,24 @@ def findDoors(room):
                      ) + ((EDIT_ROOM_SIZE / 2) - 8), 16, 16)
     )
 
+
+def validateRoom(x, y, map, type):
+    for i in range(4):
+        if map.getRoom(x + doorToDisp[i][0], y + doorToDisp[i][1]) is not None:
+            room = map.getRoom(x + doorToDisp[i][0], y + doorToDisp[i][1])
+            if room.doors[(i + 2) % 4] >= 0 and type[0][i] == -1:
+                return False
+
+    return True
+
+    '''if map.getRoom(x + doorToDisp[0][0], y + doorToDisp[0][1]) is not None:
+        northroom = map.getRoom(x + doorToDisp[0][0], y + doorToDisp[0][1])
+        if northroom.doors[2] >= 0 and type[0][0] >= 0:
+            return True
+
+        else:
+            return False'''
+
 clock = pygame.time.Clock()
 
 pygame.init()
@@ -102,15 +120,39 @@ while True:
 
                 if gamemap.getRoom(newX, newY) is None:
                     possibleTypes = core.roomTypes[1:]
-                    requiredDoor = (selectedDoor + 2) % 4
-                    possibleTypes = list(filter(lambda x: x[0][requiredDoor] >= 0, zip(possibleTypes, range(len(possibleTypes)))))
-                    gamemap.setRoom(core.RoomData(newX, newY, possibleTypes[0][1] + 1))
+                    possibleTypes = list(filter(lambda a: validateRoom(newX, newY, gamemap, a), zip(possibleTypes, range(len(possibleTypes)))))
+
+                    if len(possibleTypes) > 0:
+                        gamemap.setRoom(core.RoomData(newX, newY, possibleTypes[0][1] + 1))
 
                 else:
                     room.doors[selectedDoor] += 1
                     room.doors[selectedDoor] %= len(doorColours)
                     gamemap.getRoom(newX, newY).doors[(selectedDoor + 2) % 4] = room.doors[selectedDoor]
 
+            elif event.button == 3:
+                room = gamemap.getRoom(selectedX, selectedY)
+                if room is not None and selectedDoor == -1 and room.type > 0:
+                    possibleTypes = core.roomTypes[1:]
+                    possibleTypes = list(filter(lambda a: validateRoom(selectedX, selectedY, gamemap, a),
+                                                zip(possibleTypes, range(len(possibleTypes)))))
+
+
+
+                    currentIndex = -1
+                    for x in range(len(possibleTypes)):
+                        if possibleTypes[x][1] + 1 == room.type:
+                            currentIndex = x
+                            break
+
+                    currentIndex = (currentIndex + 1) % len(possibleTypes)
+                    newDoors = possibleTypes[currentIndex][0][:]
+                    for x in range(4):
+                        if newDoors[x] == 0 and room.doors[x] >= 0:
+                            newDoors[x] = room.doors[x]
+
+                    room.doors = newDoors
+                    room.type = possibleTypes[currentIndex][1] + 1
 
 
     keys = pygame.key.get_pressed()
