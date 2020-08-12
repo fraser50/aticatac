@@ -1,5 +1,7 @@
 import pygame
 import sys
+import json
+import os
 
 import core
 
@@ -19,6 +21,8 @@ roomarea_width  = 512
 roomarea_height = 512
 
 EDIT_ROOM_SIZE = 64
+
+MAP_FILE = 'map.json'
 
 cameraX = (-roomarea_width / 2) + EDIT_ROOM_SIZE
 cameraY = (-roomarea_height / 2) + EDIT_ROOM_SIZE
@@ -76,13 +80,24 @@ def validateRoom(x, y, map, type):
         else:
             return False'''
 
+def closeHandler(map):
+    with open(MAP_FILE, 'w') as f:
+        f.write(json.dumps(map.toDict(), indent=4))
+
+    sys.exit()
+
 clock = pygame.time.Clock()
 
 pygame.init()
 
 screen = pygame.display.set_mode((roomarea_width, roomarea_height))
 
-gamemap = core.GameMap()
+if os.path.exists(MAP_FILE):
+    with open(MAP_FILE, 'r') as f:
+        gamemap = core.GameMap.fromDict(json.loads(f.read()))
+
+else:
+    gamemap = core.GameMap()
 
 while True:
 
@@ -107,7 +122,7 @@ while True:
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            sys.exit()
+            closeHandler(gamemap)
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1: # Left click
@@ -170,7 +185,7 @@ while True:
         cameraY += SPEED
 
     if keys[pygame.K_ESCAPE]:
-        sys.exit()
+        closeHandler(gamemap)
 
 
     screen.fill(WHITE)

@@ -113,6 +113,7 @@ class RoomData():
     def __init__(self, x, y, type):
         self.x = x
         self.y = y
+        self.floor = 0
         self.type = type
         #self.north = roomTypes[type][0]
         #self.east = roomTypes[type][1]
@@ -149,3 +150,37 @@ class GameMap():
 
         else:
             return None
+
+    def toDict(self):
+        data = {}
+        data['version'] = 0
+        data['rooms'] = []
+
+        for room in self.rooms:
+            roomdict = {
+                'x' : room.x,
+                'y' : room.y,
+                'floor' : room.floor,
+                'passage1' : room.passage1,
+                'passage2' : room.passage2,
+                'doors' : room.doors,
+                'type' : room.type
+            }
+
+            data['rooms'].append(roomdict)
+
+        return data
+
+    @classmethod
+    def fromDict(cls, data):
+        gmap = GameMap(startroom=False)
+        for rdict in data['rooms']:
+            room = RoomData(rdict['x'], rdict['y'], rdict['type'])
+            room.floor = rdict['floor']
+            room.passage1 = rdict['passage1']
+            room.passage2 = rdict['passage2']
+            room.doors = rdict['doors']
+
+            gmap.setRoom(room)
+
+        return gmap
