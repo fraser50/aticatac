@@ -69,7 +69,7 @@ class AticAtacClient(threading.Thread):
                     if packet is not None:
                         self.peer.incoming.append(packet)
 
-                except server.CloseConnectionException:
+                except net.CloseConnectionException:
                     print('Invalid packet :( (Client-Side)')
                     self.failure = True
                     self.active = False
@@ -158,7 +158,7 @@ while True:
             pack = client.incomingqueue.get_nowait()
             if isinstance(pack, net.SendObjectPacket):
                 # pack.type
-                obj = core.gobjTypes[pack.type].generateBasic(pack.x, pack.y)
+                obj = core.gobjTypes[pack.type].generateBasic(pack.x, pack.y, pack.data)
                 obj.id = pack.uid
                 currentobjs.append(obj)
 

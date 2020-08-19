@@ -62,21 +62,22 @@ class PlayerChangePos(Packet):
 
 
 class SendObjectPacket(Packet):
-    def __init__(self, x, y, type, uid):
+    def __init__(self, x, y, type, data, uid):
         super().__init__(2)
 
         self.x = x
         self.y = y
         self.type = type
+        self.data = data
         self.uid = uid
 
     def toBytes(self):
-        return struct.pack('!iibH', self.x, self.y, self.type, self.uid)
+        return struct.pack('!iibbH', self.x, self.y, self.type, self.data, self.uid)
 
     @classmethod
     def fromBytes(cls, bstr):
-        x, y, type, uid = struct.unpack('!iibH', bstr)
-        return SendObjectPacket(x, y, type, uid)
+        x, y, type, data, uid = struct.unpack('!iibbH', bstr)
+        return SendObjectPacket(x, y, type, data, uid)
 
 
 class SendControlledUpdate(Packet):

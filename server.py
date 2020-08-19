@@ -37,9 +37,10 @@ class GamePlayer():
         room.addObject(self.currobj)
         self.tosend.put(net.SwitchRoomPacket(room.roomid, room.roomtype))
         self.tosend.put(net.SendControlledUpdate(self.currobj.id))
+
         for obj in self.room.roomobjects:
             if obj != self.currobj:
-                self.tosend.put(net.SendObjectPacket(obj.x, obj.y, core.gobjDict[obj.__class__], obj.id))
+                self.tosend.put(net.SendObjectPacket(obj.x, obj.y, core.gobjDict[obj.__class__], obj.getData(), obj.id))
 
 
 class AticAtacGame(threading.Thread):
@@ -98,7 +99,7 @@ class AticAtacGame(threading.Thread):
 
                 for obj in room.newobjects:
                     for p in room.players:
-                        p.tosend.put_nowait(net.SendObjectPacket(obj.x, obj.y, core.gobjDict[obj.__class__], obj.id))
+                        p.tosend.put_nowait(net.SendObjectPacket(obj.x, obj.y, obj.getData(), core.gobjDict[obj.__class__], obj.id))
 
                 room.newobjects.clear()
 

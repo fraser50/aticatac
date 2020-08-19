@@ -38,7 +38,7 @@ class GameObject():
         self.poschange = False
 
     @classmethod
-    def generateBasic(cls, x, y):
+    def generateBasic(cls, x, y,data):
         raise NotImplementedError
 
     def update(self, room):
@@ -62,12 +62,15 @@ class GameObject():
         self._y = y
         self.poschange = True
 
+    def getData(self):
+        return 0
+
 class PlayerObj(GameObject):
     def __init__(self, x, y):
         super().__init__(x, y)
 
     @classmethod
-    def generateBasic(cls, x, y):
+    def generateBasic(cls, x, y, data):
         return PlayerObj(x, y)
 
 class Door(GameObject):
@@ -76,7 +79,7 @@ class Door(GameObject):
         self.roomtogo = roomtogo
 
     @classmethod
-    def generateBasic(cls, x, y):
+    def generateBasic(cls, x, y, data):
         return Door(x, y, None)
 
     def update(self, room):
