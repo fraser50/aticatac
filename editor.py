@@ -42,13 +42,6 @@ doorColours = [
     BLUE
 ]
 
-doorToDisp = [
-    (0, -1),
-    (1, 0),
-    (0, 1),
-    (-1, 0)
-]
-
 def findDoors(room):
     return (
         pygame.Rect(((room.x * EDIT_ROOM_SIZE) - cameraX) + ((EDIT_ROOM_SIZE / 2) - 8),
@@ -68,8 +61,8 @@ def findDoors(room):
 
 def validateRoom(x, y, map, type):
     for i in range(4):
-        if map.getRoom(x + doorToDisp[i][0], y + doorToDisp[i][1]) is not None:
-            room = map.getRoom(x + doorToDisp[i][0], y + doorToDisp[i][1])
+        if map.getRoom(x + core.doorToDisp[i][0], y + core.doorToDisp[i][1]) is not None:
+            room = map.getRoom(x + core.doorToDisp[i][0], y + core.doorToDisp[i][1])
             if room.doors[(i + 2) % 4] >= 0 and type[0][i] == -1:
                 return False
 
@@ -78,8 +71,8 @@ def validateRoom(x, y, map, type):
 
     return True
 
-    '''if map.getRoom(x + doorToDisp[0][0], y + doorToDisp[0][1]) is not None:
-        northroom = map.getRoom(x + doorToDisp[0][0], y + doorToDisp[0][1])
+    '''if map.getRoom(x + core.doorToDisp[0][0], y + core.doorToDisp[0][1]) is not None:
+        northroom = map.getRoom(x + core.doorToDisp[0][0], y + core.doorToDisp[0][1])
         if northroom.doors[2] >= 0 and type[0][0] >= 0:
             return True
 
@@ -98,7 +91,7 @@ def findConnectingDoor(room1, room2):
 
     counter = -1
 
-    for door in doorToDisp:
+    for door in core.doorToDisp:
         counter += 1
         if door[0] == diffX and door[1] == diffY:
             return counter
@@ -193,7 +186,7 @@ while True:
 
                 room = gamemap.getRoom(selectedX, selectedY)
                 if room == None or selectedDoor == -1: continue
-                disp = doorToDisp[selectedDoor]
+                disp = core.doorToDisp[selectedDoor]
 
                 newX = room.x + disp[0]
                 newY = room.y + disp[1]

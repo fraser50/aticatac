@@ -6,9 +6,40 @@ import random
 import queue
 from time import sleep
 import net
+import json
 
 allowedchars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_'
 
+doorPositions = (
+    (256 - (core.DOOR_SIZE / 2), 0),
+    (512 - core.DOOR_SIZE, 256 - (core.DOOR_SIZE / 2)),
+    (256 - (core.DOOR_SIZE / 2), 512 - core.DOOR_SIZE),
+    (0, 256 - (core.DOOR_SIZE / 2))
+)
+
+doorPositions = tuple(map(lambda x: tuple(map(lambda y: int(y), x)), doorPositions))
+
+def buildMap(gamemap, game):
+
+    rooms = []
+
+    for rd in gamemap.rooms:
+        room = core.Room(rd.type, len(rooms), game)
+        for x in range(4):
+            if core.roomTypes[rd.type][x] == -1:
+                continue
+
+            nextroom = gamemap.getRoom(rd.x + core.doorToDisp[x][0], rd.y + core.doorToDisp[x][1])
+
+            togo = -1 if nextroom is None else gamemap.rooms.index(nextroom)
+
+            door = core.Door(doorPositions[x][0], doorPositions[x][1], togo, x, rd.doors[x])
+
+            room.addObject(door)
+
+        rooms.append(room)
+
+    return rooms
 
 class Player(net.ConnectedPeer):
     def __init__(self, name, conn, gp):
@@ -26,14 +57,14 @@ class GamePlayer():
         self.tosend = queue.Queue()
         self.currobj = None
 
-    def changeRoom(self, room, x=496, y=496):
+    def changeRoom(self, room, x=256 - 32, y=256 - 32):
         if self.room != None:
             self.room.deleteObject(self.currobj)
             self.room.players.remove(self)
 
         self.room = room
         self.room.players.append(self)
-        self.currobj = core.PlayerObj(random.randrange(0, x), random.randrange(0, y))
+        self.currobj = core.PlayerObj(x, y)
         room.addObject(self.currobj)
         self.tosend.put(net.SwitchRoomPacket(room.roomid, room.roomtype))
         self.tosend.put(net.SendControlledUpdate(self.currobj.id))
@@ -48,9 +79,13 @@ class AticAtacGame(threading.Thread):
         super().__init__(name='AticAtacGame')
         self.active = True
 
-        self.rooms = [core.Room(0, 0, self), core.Room(0, 1, self)]
-        self.rooms[0].addObject(core.Door(300, 300, 1))
-        self.rooms[1].addObject(core.Door(16, 16, 0))
+        #self.rooms = [core.Room(0, 0, self), core.Room(0, 1, self)]
+
+        with open('map.json', 'r') as f:
+            self.rooms = buildMap(core.GameMap.fromDict(json.loads(f.read())), self)
+
+        #self.rooms[0].addObject(core.Door(300, 300, 1, 3, 1))
+        #self.rooms[1].addObject(core.Door(16, 16, 0, 0, 0))
         self.outgoingqueue = queue.Queue() # This queue is for packets that should be sent to everyone in a room
         # Format (packet, roomid)
 

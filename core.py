@@ -1,6 +1,15 @@
 import random
 from pygame.rect import Rect
 
+doorToDisp = [
+    (0, -1),
+    (1, 0),
+    (0, 1),
+    (-1, 0)
+]
+
+DOOR_SIZE = 64
+
 class Room():
     def __init__(self, roomtype, roomid, game):
         self.roomtype = roomtype
@@ -74,24 +83,34 @@ class PlayerObj(GameObject):
         return PlayerObj(x, y)
 
 class Door(GameObject):
-    def __init__(self, x, y, roomtogo):
+    def __init__(self, x, y, roomtogo, rotation, colour):
         super().__init__(x, y)
         self.roomtogo = roomtogo
+        self.rotation = rotation
+        self.colour = colour
 
     @classmethod
     def generateBasic(cls, x, y, data):
-        return Door(x, y, None)
+        rotation = (data >> 4) & 15
+        colour = data & 15
+        return Door(x, y, None, rotation, colour)
 
     def update(self, room):
+        if self.roomtogo == -1:
+            return
+
         for obj in room.roomobjects:
             if isinstance(obj, PlayerObj):
                 prect = Rect(obj.x ,obj.y, 64, 64)
-                myrect = Rect(self.x, self.y, 16, 16)
+                myrect = Rect(self.x, self.y, DOOR_SIZE, DOOR_SIZE)
 
                 if myrect.colliderect(prect):
                     for p in room.players:
                         if p.currobj == obj:
                             p.changeRoom(room.game.rooms[self.roomtogo])
+
+    def getData(self):
+        return (self.rotation << 4) | self.colour
 
 
 gobjTypes = [
