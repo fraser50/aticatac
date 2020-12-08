@@ -1,0 +1,145 @@
+{
+    "version": 0,
+    "rooms": [
+        {
+            "x": 0,
+            "y": 0,
+            "floor": 0,
+            "passage1": -1,
+            "passage2": -1,
+            "doors": [
+                0,
+                -1,
+                2,
+                1
+            ],
+            "type": 0
+        },
+        {
+            "x": 0,
+            "y": 1,
+            "floor": 0,
+            "passage1": -1,
+            "passage2": -1,
+            "doors": [
+                2,
+                -1,
+                0,
+                0
+            ],
+            "type": 4
+        },
+        {
+            "x": 0,
+            "y": -1,
+            "floor": 0,
+            "passage1": -1,
+            "passage2": -1,
+            "doors": [
+                0,
+                -1,
+                0,
+                3
+            ],
+            "type": 4
+        },
+        {
+            "x": -1,
+            "y": 0,
+            "floor": 0,
+            "passage1": -1,
+            "passage2": -1,
+            "doors": [
+                0,
+                1,
+                0,
+                -1
+            ],
+            "type": 3
+        },
+        {
+            "x": -1,
+            "y": 1,
+            "floor": 0,
+            "passage1": -1,
+            "passage2": -1,
+            "doors": [
+                0,
+                0,
+                0,
+                -1
+            ],
+            "type": 3
+        },
+        {
+            "x": -1,
+            "y": 2,
+            "floor": 0,
+            "passage1": -1,
+            "passage2": -1,
+            "doors": [
+                0,
+                0,
+                0,
+                -1
+            ],
+            "type": 3
+        },
+        {
+            "x": 0,
+            "y": 2,
+            "floor": 0,
+            "passage1": -1,
+            "passage2": -1,
+            "doors": [
+                0,
+                -1,
+                0,
+                0
+            ],
+            "type": 4
+        },
+        {
+            "x": -1,
+            "y": -1,
+            "floor": 0,
+            "passage1": -1,
+            "passage2": -1,
+            "doors": [
+                0,
+                3,
+                0,
+                -1
+            ],
+            "type": 3
+        },
+        {
+            "x": -1,
+            "y": -2,
+            "floor": 0,
+            "passage1": -1,
+            "passage2": -1,
+            "doors": [
+                0,
+                0,
+                0,
+                -1
+            ],
+            "type": 3
+        },
+        {
+            "x": 0,
+            "y": -2,
+            "floor": 0,
+            "passage1": -1,
+            "passage2": -1,
+            "doors": [
+                0,
+                -1,
+                0,
+                0
+            ],
+            "type": 4
+        }
+    ]
+}
