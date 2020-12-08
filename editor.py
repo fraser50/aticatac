@@ -80,8 +80,8 @@ def validateRoom(x, y, map, type):
             return False'''
 
 def closeHandler(map):
-    #with open(MAP_FILE, 'w') as f:
-        #f.write(json.dumps(map.toDict(), indent=4))
+    with open(MAP_FILE, 'w') as f:
+        f.write(json.dumps(map.toDict(), indent=4))
 
     sys.exit()
 
