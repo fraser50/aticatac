@@ -99,6 +99,9 @@ clock = pygame.time.Clock()
 currentroom = 0
 currentroomtype = 0
 
+counter = 29
+totalFPS = 0
+
 currentobjs = []
 
 currentcontrols = set()
@@ -213,3 +216,10 @@ while True:
     pygame.display.flip()
 
     fps = clock.tick(30)
+    totalFPS += fps
+    counter += 1
+
+    if counter == 30:
+        counter = 0
+        pygame.display.set_caption("Game | FPS: " + str(int(totalFPS/30)))
+        totalFPS = 0
