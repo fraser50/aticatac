@@ -133,6 +133,17 @@ roomTypes = [
     [-1, 0, 0, 0],
     [0, 0, 0, 0]
 ]
+
+roomDoorOffsets = (
+    (0, 0),
+    (0, 0),
+    (0.25, 0),
+    (0.25, 0),
+    (0.25, 0),
+    (0, 0),
+    (0, 0),
+    (0, 0),
+)
 class RoomData():
     def __init__(self, x, y, type):
         self.x = x

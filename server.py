@@ -35,6 +35,12 @@ def buildMap(gamemap, game):
 
             door = core.Door(doorPositions[x][0], doorPositions[x][1], togo, x, rd.doors[x])
 
+            if x % 2 != 0:
+                # Add offset to door positions depending on the room. (Makes corridors look good)
+                # Protected variables are accessed below to prevent poschange from becoming True.
+                door._x += int(512 * core.roomDoorOffsets[rd.type][0]) * (-1 if x == 1 else 1)
+                door._y += int(512 * core.roomDoorOffsets[rd.type][1]) * (-1 if x == 1 else 1)
+
             room.addObject(door)
 
         rooms.append(room)

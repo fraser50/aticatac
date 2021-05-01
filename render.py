@@ -24,6 +24,22 @@ door_keys = (
     loadImage('assets/graphics/door/door_blue.png', core.DOOR_SIZE, core.DOOR_SIZE),
 )
 
+room_generic = loadImage('assets/graphics/room/room_generic.png', 512, 512)
+room_3way = loadImage('assets/graphics/room/room_3way_junction.png', 512, 512)
+
+# Room background info: (surface, x_percent_offset, y_percent_offset)
+# The only real reason the offsets exist is because I didn't manage to exactly centre the corridor image
+room_images = (
+    (room_generic, 0, 0),
+    None,
+    (room_3way, 0.03, 0),
+    (room_3way, 0.03, 0),
+    (room_3way, 0.03, 0),
+    None,
+    None,
+    (room_generic, 0, 0)
+)
+
 class RenderState():
     def RenderState(self, width, height):
         self.width = width

@@ -97,6 +97,7 @@ currentstate = gamestate.PLAYING
 clock = pygame.time.Clock()
 
 currentroom = 0
+currentroomtype = 0
 
 currentobjs = []
 
@@ -188,6 +189,7 @@ while True:
                 currentobjs.clear()
                 currentcontrolled = -1
                 currentroom = pack.roomid
+                currentroomtype = pack.roomtype
 
 
         except queue.Empty:
@@ -196,6 +198,12 @@ while True:
 
 
     screen.fill(WHITE)
+    background = render.room_images[currentroomtype]
+    if background is not None:
+        rect = background[0].get_rect()
+        rect.left = int(roomarea_width * background[1])
+        rect.top = int(roomarea_height * background[2])
+        screen.blit(background[0], rect)
 
     for obj in currentobjs:
 
