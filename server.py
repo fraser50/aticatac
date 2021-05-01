@@ -43,6 +43,9 @@ def buildMap(gamemap, game):
 
             room.addObject(door)
 
+            if rd.type == 0:
+                room.addObject(core.Food(128, 128, 0))
+
         rooms.append(room)
 
     return rooms

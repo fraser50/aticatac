@@ -18,6 +18,11 @@ def loadImage(path, width, height):
 playerimg = loadImage('assets/graphics/player.png', 64, 64)
 doorclosedimg = loadImage('assets/graphics/door/door_closed.png', core.DOOR_SIZE, core.DOOR_SIZE)
 
+# Foods
+foodImages = (
+    loadImage('assets/graphics/food/chocolate.png', 64, 64),
+)
+
 door_keys = (
     loadImage('assets/graphics/door/door_red.png', core.DOOR_SIZE, core.DOOR_SIZE),
     loadImage('assets/graphics/door/door_green.png', core.DOOR_SIZE, core.DOOR_SIZE),
@@ -63,8 +68,15 @@ def renderDoor(surface, obj):
 
     surface.blit(transformedsurface, pygame.Rect(obj.x, obj.y, core.DOOR_SIZE, core.DOOR_SIZE))
 
+def renderFood(surface, obj):
+    foodImg = foodImages[obj.getData()]
+    rect = foodImg.get_rect()
+    rect.left = obj.x
+    rect.y = obj.y
+    surface.blit(foodImg, rect)
 
 renderdict = {
     core.PlayerObj : renderPlayer,
-    core.Door : renderDoor
+    core.Door : renderDoor,
+    core.Food : renderFood
 }

@@ -47,7 +47,7 @@ class GameObject():
         self.poschange = False
 
     @classmethod
-    def generateBasic(cls, x, y,data):
+    def generateBasic(cls, x, y, data):
         raise NotImplementedError
 
     def update(self, room):
@@ -113,14 +113,29 @@ class Door(GameObject):
         return (self.rotation << 4) | self.colour
 
 
+class Food(GameObject):
+    def __init__(self, x, y, type):
+        super().__init__(x, y,)
+        self.type = type
+
+    def getData(self):
+        return self.type
+
+    @classmethod
+    def generateBasic(cls, x, y, data):
+        return Food(x, y, data)
+
+
 gobjTypes = [
     PlayerObj,
-    Door
+    Door,
+    Food
 ]
 
 gobjDict = {
     PlayerObj : 0,
-    Door : 1
+    Door : 1,
+    Food : 2
 }
 
 roomTypes = [
