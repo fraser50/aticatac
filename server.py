@@ -229,7 +229,11 @@ class AticAtacServer(threading.Thread):
                     continue
 
                 if len(p.tosend) > 0:
-                    p.tosend = p.tosend[s.send(p.tosend):]
+                    try:
+                        p.tosend = p.tosend[s.send(p.tosend):]
+
+                    except ConnectionError:
+                        self.todelete.append(p)
 
             for s in exceptional:
                 self.todelete.append(self.socktoplayer[s])
