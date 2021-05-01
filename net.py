@@ -170,14 +170,13 @@ def handleRead(s, p):
 
     if len(datareceived) == 0:
         #self.active = False
-        print('Closing connection...')
-        raise CloseConnectionException()  # TODO: disconnect client
+        raise CloseConnectionException()
 
     p.currdata += datareceived
 
     if p.currentpos == 2:
         if p.currdata != magicbytes:
-            raise CloseConnectionException()  # TODO: disconnect client
+            raise CloseConnectionException()
 
         else:
             p.currdata = b''

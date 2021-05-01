@@ -213,7 +213,6 @@ class AticAtacServer(threading.Thread):
 
                     except net.CloseConnectionException:
                         self.todelete.append(p)
-                        self.gamethread.offlineplayers.put_nowait(p.gp)
 
 
                     if packet is not None:
@@ -244,9 +243,13 @@ class AticAtacServer(threading.Thread):
                     self.players.remove(p)
                     del self.socktoplayer[p.conn]
                     self.sockets.remove(p.conn)
+                    self.gamethread.offlineplayers.put_nowait(p.gp)
+                    addr = p.conn.getpeername()
+                    print("Closed connection from: " + addr[0] + ":" + str(addr[1]))
+                    p.conn.close()
 
                 except:
-                    pass
+                    print("Encountered an error attempting to disconnect user!")
 
             self.todelete.clear()
 
