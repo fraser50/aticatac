@@ -153,7 +153,18 @@ while True:
                 obj.x += v[0]
                 obj.y += v[1]
 
-            if changed: client.outgoingqueue.put(net.PlayerChangePos(obj.x, obj.y, currentroom))
+            if changed:
+                roomDims = core.roomDimensions[currentroomtype]
+
+                # Confine player to room
+                obj.x = roomDims[0] if obj.x < roomDims[0] else obj.x
+                obj.x = roomDims[2]-64 if obj.x > roomDims[2]-64 else obj.x
+
+                obj.y = roomDims[1] if obj.y < roomDims[1] else obj.y
+                obj.y = roomDims[3]-64 if obj.y > roomDims[3]-64 else obj.y
+
+                client.outgoingqueue.put(net.PlayerChangePos(obj.x, obj.y, currentroom))
+
             break
 
 
