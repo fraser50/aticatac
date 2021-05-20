@@ -7,6 +7,7 @@ import queue
 from time import sleep
 import net
 import json
+from pygame.rect import Rect
 
 allowedchars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_'
 
@@ -43,12 +44,10 @@ def buildMap(gamemap, game):
 
             room.addObject(door)
 
-            if rd.type == 0:
-                room.addObject(core.Food(128, 128, 0))
-
         rooms.append(room)
 
     return rooms
+
 
 class Player(net.ConnectedPeer):
     def __init__(self, name, conn, gp):
@@ -92,6 +91,8 @@ class AticAtacGame(threading.Thread):
 
         with open('map.json', 'r') as f:
             self.rooms = buildMap(core.GameMap.fromDict(json.loads(f.read())), self)
+
+        self.populateFood()
 
         #self.rooms[0].addObject(core.Door(300, 300, 1, 3, 1))
         #self.rooms[1].addObject(core.Door(16, 16, 0, 0, 0))
@@ -156,6 +157,35 @@ class AticAtacGame(threading.Thread):
                             if p.currobj != obj:
                                 p.tosend.put(net.UpdateObjectPosition(obj.id, obj.x, obj.y))
 
+    def populateFood(self):
+        for room in random.sample(self.rooms, int(len(self.rooms)/2)):
+            self.addFood(room)
+
+    def addFood(self, room):
+        foodRect = Rect(0, 0, 68, 68)
+        objRect = Rect(0, 0, 68, 68)
+
+        noSpace = True
+
+        while noSpace:
+            roomDims = core.roomDimensions[room.roomtype]
+            foodX = random.randrange(roomDims[0], roomDims[2]-64)
+            foodY = random.randrange(roomDims[1], roomDims[3]-64)
+
+            foodRect.left = foodX
+            foodRect.top = foodY
+
+            noSpace = False
+            for obj in room.roomobjects:
+                objRect.left = obj.x
+                objRect.top = obj.y
+
+                if foodRect.colliderect(objRect):
+                    noSpace = True
+                    break
+
+        food = core.Food(foodRect.left, foodRect.top, 0)
+        room.addObject(food)
 
 
 class AticAtacServer(threading.Thread):
@@ -218,7 +248,6 @@ class AticAtacServer(threading.Thread):
                     if packet is not None:
                         p.incoming.append(packet)
 
-
             for s in writable:
                 p = None
                 try:
@@ -262,6 +291,7 @@ class AticAtacServer(threading.Thread):
         self.sock.close()
         self.gamethread.active = False
         self.gamethread.join()
+
 
 if __name__ == '__main__':
     serverthread = AticAtacServer()
