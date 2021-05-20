@@ -30,7 +30,7 @@ cameraY = (-roomarea_height / 2) + EDIT_ROOM_SIZE
 mouseX = 0
 mouseY = 0
 
-SPEED = 3 # 4
+SPEED = 3  # 4
 
 connectMode = False
 connectedRoom1 = None
@@ -41,6 +41,7 @@ doorColours = [
     GREEN,
     BLUE
 ]
+
 
 def findDoors(room):
     return (
@@ -71,19 +72,13 @@ def validateRoom(x, y, map, type):
 
     return True
 
-    '''if map.getRoom(x + core.doorToDisp[0][0], y + core.doorToDisp[0][1]) is not None:
-        northroom = map.getRoom(x + core.doorToDisp[0][0], y + core.doorToDisp[0][1])
-        if northroom.doors[2] >= 0 and type[0][0] >= 0:
-            return True
-
-        else:
-            return False'''
 
 def closeHandler(map):
     with open(MAP_FILE, 'w') as f:
         f.write(json.dumps(map.toDict(), indent=4))
 
     sys.exit()
+
 
 def findConnectingDoor(room1, room2):
     diffX = room2.x - room1.x
@@ -97,6 +92,7 @@ def findConnectingDoor(room1, room2):
             return counter
 
     return -1
+
 
 clock = pygame.time.Clock()
 
@@ -130,7 +126,6 @@ while True:
             if mouserect.colliderect(selectedRoomDoors[x]) and gamemap.getRoom(selectedX, selectedY).doors[x] >= 0:
                 selectedDoor = x
                 break
-
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -181,11 +176,10 @@ while True:
                         connectedRoom1 = None
                         connectMode = False
 
-
                     continue
 
                 room = gamemap.getRoom(selectedX, selectedY)
-                if room == None or selectedDoor == -1: continue
+                if room is None or selectedDoor == -1: continue
                 disp = core.doorToDisp[selectedDoor]
 
                 newX = room.x + disp[0]
@@ -210,8 +204,6 @@ while True:
                     possibleTypes = list(filter(lambda a: validateRoom(selectedX, selectedY, gamemap, a),
                                                 zip(possibleTypes, range(len(possibleTypes)))))
 
-
-
                     currentIndex = -1
                     for x in range(len(possibleTypes)):
                         if possibleTypes[x][1] + 1 == room.type:
@@ -230,7 +222,6 @@ while True:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_c:
                 connectMode = not connectMode
-
 
     keys = pygame.key.get_pressed()
 
@@ -290,7 +281,6 @@ while True:
                     pygame.draw.rect(screen, doorColours[room.doors[x]], doors[x])
 
                 pygame.draw.rect(screen, BLACK, doors[x], 2)
-
 
     pygame.display.flip()
     fps = clock.tick(60)

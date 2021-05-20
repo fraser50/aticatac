@@ -18,7 +18,9 @@ doorPositions = (
     (0, 256 - (core.DOOR_SIZE / 2))
 )
 
+# Make sure doorPositions only includes integers
 doorPositions = tuple(map(lambda x: tuple(map(lambda y: int(y), x)), doorPositions))
+
 
 def buildMap(gamemap, game):
 
@@ -66,7 +68,7 @@ class GamePlayer():
         self.currobj = None
 
     def changeRoom(self, room, x=256 - 32, y=256 - 32):
-        if self.room != None:
+        if self.room is not None:
             self.room.deleteObject(self.currobj)
             self.room.players.remove(self)
 
@@ -87,16 +89,12 @@ class AticAtacGame(threading.Thread):
         super().__init__(name='AticAtacGame')
         self.active = True
 
-        #self.rooms = [core.Room(0, 0, self), core.Room(0, 1, self)]
-
         with open('map.json', 'r') as f:
             self.rooms = buildMap(core.GameMap.fromDict(json.loads(f.read())), self)
 
         self.populateFood()
 
-        #self.rooms[0].addObject(core.Door(300, 300, 1, 3, 1))
-        #self.rooms[1].addObject(core.Door(16, 16, 0, 0, 0))
-        self.outgoingqueue = queue.Queue() # This queue is for packets that should be sent to everyone in a room
+        self.outgoingqueue = queue.Queue()  # This queue is for packets that should be sent to everyone in a room
         # Format (packet, roomid)
 
         self.players = []
@@ -112,9 +110,8 @@ class AticAtacGame(threading.Thread):
                 p.room.players.remove(p)
                 self.players.remove(p)
 
-                if p.currobj != None:
+                if p.currobj is not None:
                     p.room.deleteObject(p.currobj)
-
 
             while not self.newplayers.empty():
                 p = self.newplayers.get_nowait()
@@ -243,7 +240,6 @@ class AticAtacServer(threading.Thread):
 
                     except net.CloseConnectionException:
                         self.todelete.append(p)
-
 
                     if packet is not None:
                         p.incoming.append(packet)

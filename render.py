@@ -1,6 +1,5 @@
 import core
 import pygame
-#from pygame import Rect
 
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
@@ -14,6 +13,7 @@ def loadImage(path, width, height):
     img = pygame.image.load(path)
     img = pygame.transform.scale(img, (width, height,))
     return img
+
 
 playerimg = loadImage('assets/graphics/player.png', 64, 64)
 doorclosedimg = loadImage('assets/graphics/door/door_closed.png', core.DOOR_SIZE, core.DOOR_SIZE)
@@ -45,17 +45,19 @@ room_images = (
     (room_generic, 0, 0)
 )
 
+
 class RenderState():
-    def RenderState(self, width, height):
+    def __init__(self, width, height):
         self.width = width
         self.height = height
+
 
 def renderPlayer(surface, obj):
     rect = playerimg.get_rect()
     rect.left = obj.x
     rect.top = obj.y
     surface.blit(playerimg, rect)
-    #surface.fill(GREEN, pygame.Rect(obj.x, obj.y, 16, 16))
+
 
 def renderDoor(surface, obj):
     door_surface = pygame.Surface((core.DOOR_SIZE, core.DOOR_SIZE), pygame.SRCALPHA, 32)
@@ -68,12 +70,14 @@ def renderDoor(surface, obj):
 
     surface.blit(transformedsurface, pygame.Rect(obj.x, obj.y, core.DOOR_SIZE, core.DOOR_SIZE))
 
+
 def renderFood(surface, obj):
     foodImg = foodImages[obj.getData()]
     rect = foodImg.get_rect()
     rect.left = obj.x
     rect.y = obj.y
     surface.blit(foodImg, rect)
+
 
 renderdict = {
     core.PlayerObj : renderPlayer,

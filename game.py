@@ -30,12 +30,13 @@ pygame.init()
 
 currentcontrolled = -1
 
+
 class AticAtacClient(threading.Thread):
     def __init__(self, ip, port):
         super().__init__(name='AticAtacClient')
         self.active = True
 
-        self.ip = ip # 13225
+        self.ip = ip  # 13225
         self.port = port
 
         self.incomingqueue = queue.Queue()
@@ -47,7 +48,7 @@ class AticAtacClient(threading.Thread):
         self.sock.connect((self.ip, self.port))
         self.sock.setblocking(False)
         self.peer = net.ConnectedPeer(self.sock)
-        self.failure = False # This will be set to True when a fatal network error is detected
+        self.failure = False  # This will be set to True when a fatal network error is detected
 
         while self.active:
 
@@ -61,8 +62,6 @@ class AticAtacClient(threading.Thread):
 
             readable, writable, exceptional = select.select([self.sock], [self.sock], [self.sock])
             for s in readable:
-                packet = None
-
                 try:
                     packet = net.handleRead(s, self.peer)
 
@@ -82,6 +81,7 @@ class AticAtacClient(threading.Thread):
                 self.incomingqueue.put(pack)
 
             self.peer.incoming.clear()
+
 
 screen = pygame.display.set_mode((roomarea_width, roomarea_height))
 
@@ -167,7 +167,6 @@ while True:
 
             break
 
-
     while True:
         try:
             pack = client.incomingqueue.get_nowait()
@@ -193,7 +192,7 @@ while True:
                         toremove = obj
                         break
 
-                if toremove == None:
+                if toremove is None:
                     print('Warning! No object to remove!')
 
                 else:
@@ -205,11 +204,8 @@ while True:
                 currentroom = pack.roomid
                 currentroomtype = pack.roomtype
 
-
         except queue.Empty:
             break
-
-
 
     screen.fill(WHITE)
     background = render.room_images[currentroomtype]
@@ -222,7 +218,6 @@ while True:
     for obj in currentobjs:
 
         render.renderdict[obj.__class__](screen, obj)
-
 
     pygame.display.flip()
 

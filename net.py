@@ -26,6 +26,7 @@ class ConnectedPeer():
 class CloseConnectionException(Exception):
     pass
 
+
 class Packet():
     def __init__(self, packetid):
         self.packetid = packetid
@@ -45,7 +46,6 @@ class SetNamePacket(Packet):
 
 
 class PlayerChangePos(Packet):
-
     def __init__(self, x, y, rid):
         super().__init__(1)
         self.x = x
@@ -93,6 +93,7 @@ class SendControlledUpdate(Packet):
     def fromBytes(cls, bstr):
         return SendControlledUpdate(struct.unpack('!H', bstr)[0])
 
+
 class UpdateObjectPosition(Packet):
     def __init__(self, uid, x, y):
         super().__init__(4)
@@ -108,6 +109,7 @@ class UpdateObjectPosition(Packet):
     def fromBytes(cls, bstr):
         uid, x, y = struct.unpack('!Hii', bstr)
         return UpdateObjectPosition(uid, x, y)
+
 
 class RemoveObjectPacket(Packet):
     def __init__(self, uid):
@@ -130,7 +132,7 @@ class SwitchRoomPacket(Packet):
         self.roomtype = roomtype
 
     def toBytes(self):
-        return struct.pack('!Hb',self.roomid, self.roomtype)
+        return struct.pack('!Hb', self.roomid, self.roomtype)
 
     @classmethod
     def fromBytes(cls, bstr):
@@ -147,6 +149,7 @@ packet_types = [
     RemoveObjectPacket,
     SwitchRoomPacket
 ]
+
 
 def handleRead(s, p):
     torecv = 0
@@ -169,7 +172,6 @@ def handleRead(s, p):
         return
 
     if len(datareceived) == 0:
-        #self.active = False
         raise CloseConnectionException()
 
     p.currdata += datareceived

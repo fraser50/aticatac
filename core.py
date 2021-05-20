@@ -10,13 +10,14 @@ doorToDisp = [
 
 DOOR_SIZE = 64
 
+
 class Room():
     def __init__(self, roomtype, roomid, game):
         self.roomtype = roomtype
         self.roomobjects = []
         self.game = game
         self.roomid = roomid
-        self.players = [] # A list of players that are currently observing this room
+        self.players = []  # A list of players that are currently observing this room
         self.newobjects = []
         self.todelete = []
 
@@ -38,6 +39,7 @@ class Room():
 
     def deleteObject(self, gobj):
         self.todelete.append(gobj)
+
 
 class GameObject():
     def __init__(self, x, y, objid=-1):
@@ -74,6 +76,7 @@ class GameObject():
     def getData(self):
         return 0
 
+
 class PlayerObj(GameObject):
     def __init__(self, x, y):
         super().__init__(x, y)
@@ -81,6 +84,7 @@ class PlayerObj(GameObject):
     @classmethod
     def generateBasic(cls, x, y, data):
         return PlayerObj(x, y)
+
 
 class Door(GameObject):
     def __init__(self, x, y, roomtogo, rotation, colour):
@@ -101,7 +105,7 @@ class Door(GameObject):
 
         for obj in room.roomobjects:
             if isinstance(obj, PlayerObj):
-                prect = Rect(obj.x ,obj.y, 64, 64)
+                prect = Rect(obj.x, obj.y, 64, 64)
                 myrect = Rect(self.x, self.y, DOOR_SIZE, DOOR_SIZE)
 
                 if myrect.colliderect(prect):
@@ -141,7 +145,7 @@ gobjDict = {
 roomTypes = [
     [0, -1, 0, 0],
     [-1, 0, -1, 0],
-    [0, -1, 0,-1],
+    [0, -1, 0, -1],
     [0, 0, 0, -1],
     [0, -1, 0, 0],
     [0, 0, -1, 0],
@@ -177,10 +181,6 @@ class RoomData():
         self.y = y
         self.floor = 0
         self.type = type
-        #self.north = roomTypes[type][0]
-        #self.east = roomTypes[type][1]
-        #self.south = roomTypes[type][2]
-        #self.west = roomTypes[type][3]
         self.doors = roomTypes[type][:]
         self.trap = -1
         self.passage1 = -1
