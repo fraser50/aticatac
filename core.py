@@ -111,7 +111,15 @@ class Door(GameObject):
                 if myrect.colliderect(prect):
                     for p in room.players:
                         if p.currobj == obj:
-                            p.changeRoom(room.game.rooms[self.roomtogo])
+                            roomtogo = room.game.rooms[self.roomtogo]
+
+                            for door in filter(lambda x: isinstance(x, Door), roomtogo.roomobjects):
+                                if door.rotation == (self.rotation+2) % 4:
+                                    disp = doorToDisp[door.rotation]
+                                    x = door.x - (70 * disp[0])
+                                    y = door.y - (70 * disp[1])
+
+                                    p.changeRoom(roomtogo, x, y)
 
     def getData(self):
         return (self.rotation << 4) | self.colour
