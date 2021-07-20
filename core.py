@@ -1,5 +1,4 @@
 import random
-from pygame.rect import Rect
 
 doorToDisp = [
     (0, -1),
@@ -9,6 +8,19 @@ doorToDisp = [
 ]
 
 DOOR_SIZE = 64
+
+class SimpleRect():
+    def __init__(self, x, y, width, height):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+
+    def collides(self, r):
+        return self.x + self.width >= r.x and \
+               self.x <= r.x + r.width and \
+               self.y + self.height >= r.y and \
+               self.y <= r.y + r.height
 
 
 class Room():
@@ -105,10 +117,10 @@ class Door(GameObject):
 
         for obj in room.roomobjects:
             if isinstance(obj, PlayerObj):
-                prect = Rect(obj.x, obj.y, 64, 64)
-                myrect = Rect(self.x, self.y, DOOR_SIZE, DOOR_SIZE)
+                prect = SimpleRect(obj.x, obj.y, 64, 64)
+                myrect = SimpleRect(self.x, self.y, DOOR_SIZE, DOOR_SIZE)
 
-                if myrect.colliderect(prect):
+                if myrect.collides(prect):
                     for p in room.players:
                         if p.currobj == obj:
                             roomtogo = room.game.rooms[self.roomtogo]

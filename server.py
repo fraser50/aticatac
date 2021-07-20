@@ -7,7 +7,6 @@ import queue
 from time import sleep
 import net
 import json
-from pygame.rect import Rect
 
 allowedchars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_'
 
@@ -159,8 +158,8 @@ class AticAtacGame(threading.Thread):
             self.addFood(room)
 
     def addFood(self, room):
-        foodRect = Rect(0, 0, 68, 68)
-        objRect = Rect(0, 0, 68, 68)
+        foodRect = core.SimpleRect(0, 0, 68, 68)
+        objRect = core.SimpleRect(0, 0, 68, 68)
 
         noSpace = True
 
@@ -169,19 +168,19 @@ class AticAtacGame(threading.Thread):
             foodX = random.randrange(roomDims[0], roomDims[2]-64)
             foodY = random.randrange(roomDims[1], roomDims[3]-64)
 
-            foodRect.left = foodX
-            foodRect.top = foodY
+            foodRect.x = foodX
+            foodRect.y = foodY
 
             noSpace = False
             for obj in room.roomobjects:
-                objRect.left = obj.x
-                objRect.top = obj.y
+                objRect.x = obj.x
+                objRect.y = obj.y
 
-                if foodRect.colliderect(objRect):
+                if foodRect.collides(objRect):
                     noSpace = True
                     break
 
-        food = core.Food(foodRect.left, foodRect.top, 0)
+        food = core.Food(foodRect.x, foodRect.y, 0)
         room.addObject(food)
 
 
