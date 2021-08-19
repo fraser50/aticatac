@@ -1,6 +1,8 @@
 import threading
 import socket
 import select
+import time
+
 import core
 import random
 import queue
@@ -185,14 +187,16 @@ class AticAtacGame(threading.Thread):
 
 
 class AticAtacServer(threading.Thread):
-    def __init__(self):
+    def __init__(self, ip='127.0.0.1', port=13225):
         super().__init__(name='AticAtacServer')
+        self.ip = ip
+        self.port = port
         self.active = True
 
     def run(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.setblocking(False)
-        self.sock.bind(('127.0.0.1', 13225))
+        self.sock.bind((self.ip, self.port))
         self.sock.listen(5)
 
         self.sockets = [self.sock]
@@ -291,9 +295,12 @@ class AticAtacServer(threading.Thread):
 if __name__ == '__main__':
     serverthread = AticAtacServer()
     serverthread.start()
+    print('Server started on ' + serverthread.ip + ':' + str(serverthread.port))
     try:
-        serverthread.join()
+        while True:
+            time.sleep(10)
 
     except KeyboardInterrupt:
+        print('Stopping server')
         serverthread.active = False
         serverthread.join()
