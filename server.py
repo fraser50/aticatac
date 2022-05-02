@@ -144,7 +144,7 @@ class AticAtacGame(threading.Thread):
 
                 for obj in room.newobjects:
                     for p in room.players:
-                        p.tosend.put_nowait(net.SendObjectPacket(obj.x, obj.y, obj.getData(), core.gobjDict[obj.__class__], obj.id))
+                        p.tosend.put_nowait(net.SendObjectPacket(obj.x, obj.y, core.gobjDict[obj.__class__], obj.getData(), obj.id))
 
                 room.newobjects.clear()
 
@@ -159,11 +159,15 @@ class AticAtacGame(threading.Thread):
 
                 for p in self.players:
                     p.counter += 1
-                    if p.counter == 90:
+                    if p.counter == 20: # 90
                         p.counter = 0
                         p.food -= 1
                         if p.food % 5 == 0 and p.food >= 0:
                             p.tosend.put(net.SetFoodPacket(p.food))
+
+                    if p.food == 0 and p.currobj is not None:
+                        p.food = -1
+                        p.room.addObject(core.Grave(p.currobj.x, p.currobj.y))
 
     def populateFood(self):
         for room in random.sample(self.rooms, int(len(self.rooms)/2)):

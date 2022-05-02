@@ -150,16 +150,27 @@ class Food(GameObject):
         return Food(x, y, data)
 
 
+class Grave(GameObject):
+    def __init__(self, x, y):
+        super().__init__(x, y)
+
+    @classmethod
+    def generateBasic(cls, x, y, data):
+        return Grave(x, y)
+
+
 gobjTypes = [
     PlayerObj,
     Door,
-    Food
+    Food,
+    Grave
 ]
 
 gobjDict = {
     PlayerObj : 0,
     Door : 1,
-    Food : 2
+    Food : 2,
+    Grave : 3
 }
 
 roomTypes = [

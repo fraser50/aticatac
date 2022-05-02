@@ -32,6 +32,8 @@ door_keys = (
 room_generic = loadImage('assets/graphics/room/room_generic.png', 512, 512)
 room_3way = loadImage('assets/graphics/room/room_3way_junction.png', 512, 512)
 
+graveimg = loadImage('assets/graphics/grave.png', 64, 64)
+
 # Room background info: (surface, x_percent_offset, y_percent_offset)
 # The only real reason the offsets exist is because I didn't manage to exactly centre the corridor image
 room_images = (
@@ -79,8 +81,16 @@ def renderFood(surface, obj):
     surface.blit(foodImg, rect)
 
 
+def renderGrave(surface, obj):
+    rect = graveimg.get_rect()
+    rect.left = obj.x
+    rect.top = obj.y
+    surface.blit(graveimg, rect)
+
+
 renderdict = {
     core.PlayerObj : renderPlayer,
     core.Door : renderDoor,
-    core.Food : renderFood
+    core.Food : renderFood,
+    core.Grave : renderGrave
 }
