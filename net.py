@@ -140,6 +140,20 @@ class SwitchRoomPacket(Packet):
         return SwitchRoomPacket(roomid, roomtype)
 
 
+class SetFoodPacket(Packet):
+    def __init__(self, food):
+        super().__init__(7)
+        self.food = food
+
+    def toBytes(self):
+        return struct.pack('!H', self.food)
+
+    @classmethod
+    def fromBytes(cls, bstr):
+        food = struct.unpack('!H', bstr)[0]
+        return SetFoodPacket(food)
+
+
 packet_types = [
     SetNamePacket,
     PlayerChangePos,
@@ -147,7 +161,8 @@ packet_types = [
     SendControlledUpdate,
     UpdateObjectPosition,
     RemoveObjectPacket,
-    SwitchRoomPacket
+    SwitchRoomPacket,
+    SetFoodPacket
 ]
 
 

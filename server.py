@@ -67,6 +67,8 @@ class GamePlayer():
         self.tohandle = queue.Queue()
         self.tosend = queue.Queue()
         self.currobj = None
+        self.food = 100
+        self.counter = 0
 
     def changeRoom(self, room, x=256 - 32, y=256 - 32):
         if self.room is not None:
@@ -154,6 +156,14 @@ class AticAtacGame(threading.Thread):
                         for p in room.players:
                             if p.currobj != obj:
                                 p.tosend.put(net.UpdateObjectPosition(obj.id, obj.x, obj.y))
+
+                for p in self.players:
+                    p.counter += 1
+                    if p.counter == 90:
+                        p.counter = 0
+                        p.food -= 1
+                        if p.food % 5 == 0 and p.food >= 0:
+                            p.tosend.put(net.SetFoodPacket(p.food))
 
     def populateFood(self):
         for room in random.sample(self.rooms, int(len(self.rooms)/2)):

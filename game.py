@@ -18,17 +18,23 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 
+YELLOW = (255, 255, 0)
+
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 
 roomarea_width  = 512
 roomarea_height = 512
 
+WIDTH = 512
+HEIGHT = 512 + 64
+
 PLAYER_SPEED = 4
 
 pygame.init()
 
 currentcontrolled = -1
+food = 100
 
 
 class AticAtacClient(threading.Thread):
@@ -83,7 +89,7 @@ class AticAtacClient(threading.Thread):
             self.peer.incoming.clear()
 
 
-screen = pygame.display.set_mode((roomarea_width, roomarea_height))
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
 
 # Room: (colour, vertices, connections)
@@ -204,6 +210,9 @@ while True:
                 currentroom = pack.roomid
                 currentroomtype = pack.roomtype
 
+            elif isinstance(pack, net.SetFoodPacket):
+                food = pack.food
+
         except queue.Empty:
             break
 
@@ -218,6 +227,14 @@ while True:
     for obj in currentobjs:
 
         render.renderdict[obj.__class__](screen, obj)
+
+    # Draw food bar
+    pygame.draw.rect(screen, BLACK, pygame.Rect(int(WIDTH/4), HEIGHT - 48, int(WIDTH/2), 32), 1)
+
+    maxwidth = int(WIDTH/2)-2
+    desiredWidth = int((food/100) * maxwidth)
+
+    pygame.draw.rect(screen, YELLOW, pygame.Rect(int(WIDTH/4)+1, HEIGHT - 47, desiredWidth, 30))
 
     pygame.display.flip()
 
