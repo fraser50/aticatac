@@ -121,7 +121,7 @@ while True:
 
     if gamemap.getRoom(selectedX, selectedY) is not None:
         selectedRoomDoors = findDoors(gamemap.getRoom(selectedX, selectedY))
-        mouserect = pygame.Rect(mouseX, mouseY, 0, 0)
+        mouserect = pygame.Rect(mouseX, mouseY, 1, 1)
         for x in range(len(selectedRoomDoors)):
             if mouserect.colliderect(selectedRoomDoors[x]) and gamemap.getRoom(selectedX, selectedY).doors[x] >= 0:
                 selectedDoor = x
