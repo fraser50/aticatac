@@ -224,8 +224,9 @@ while True:
         rect.top = int(roomarea_height * background[2])
         screen.blit(background[0], rect)
 
-    for obj in currentobjs:
+    sl = sorted(currentobjs, key=lambda x: render.renderOrder[x.__class__])
 
+    for obj in sl:
         render.renderdict[obj.__class__](screen, obj)
 
     # Draw food bar

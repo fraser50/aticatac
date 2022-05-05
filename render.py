@@ -94,3 +94,15 @@ renderdict = {
     core.Food : renderFood,
     core.Grave : renderGrave
 }
+
+BACKGROUND = 0
+SCENE = 1
+PLAYER = 2
+THROW = 3
+
+renderOrder = {
+    core.PlayerObj : PLAYER,
+    core.Door : BACKGROUND,
+    core.Food : SCENE,
+    core.Grave : SCENE
+}
