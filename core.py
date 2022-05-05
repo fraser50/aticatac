@@ -206,6 +206,14 @@ roomDimensions = (
     (0, 0, 512, 512),
 
 )
+
+boundedBoxes = {
+    PlayerObj : (64, 64),
+    Door : (64, 64),
+    Food : (64, 64),
+    Grave : (64, 64),
+}
+
 class RoomData():
     def __init__(self, x, y, type):
         self.x = x

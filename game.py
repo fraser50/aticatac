@@ -36,6 +36,9 @@ pygame.init()
 currentcontrolled = -1
 food = 100
 
+# Whether to show collision boxes around objects
+boxes = False
+
 
 class AticAtacClient(threading.Thread):
     def __init__(self, ip, port):
@@ -127,6 +130,10 @@ while True:
             client.active = False
             client.join()
             sys.exit()
+
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_b:
+                boxes = not boxes
 
     if currentstate == gamestate.MENU:
         screen.fill(RED)
@@ -228,6 +235,10 @@ while True:
 
     for obj in sl:
         render.renderdict[obj.__class__](screen, obj)
+
+        if boxes:
+            w, h = core.boundedBoxes[obj.__class__]
+            pygame.draw.rect(screen, BLACK, (obj.x, obj.y, w, h), 2)
 
     # Draw food bar
     pygame.draw.rect(screen, BLACK, pygame.Rect(int(WIDTH/4), HEIGHT - 48, int(WIDTH/2), 32), 1)
