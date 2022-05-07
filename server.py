@@ -167,7 +167,10 @@ class AticAtacGame(threading.Thread):
 
                     if p.food == 0 and p.currobj is not None:
                         p.food = -1
+                        p.room.deleteObject(p.currobj)
                         p.room.addObject(core.Grave(p.currobj.x, p.currobj.y))
+                        p.currobj = None
+                        p.tosend.put(net.AnnounceDeathPacket())
 
     def populateFood(self):
         for room in random.sample(self.rooms, int(len(self.rooms)/2)):

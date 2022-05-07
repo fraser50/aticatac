@@ -154,6 +154,18 @@ class SetFoodPacket(Packet):
         return SetFoodPacket(food)
 
 
+class AnnounceDeathPacket(Packet):
+    def __init__(self):
+        super().__init__(8)
+
+    def toBytes(self):
+        return b''
+
+    @classmethod
+    def fromBytes(cls, bstr):
+        return AnnounceDeathPacket()
+
+
 packet_types = [
     SetNamePacket,
     PlayerChangePos,
@@ -162,7 +174,8 @@ packet_types = [
     UpdateObjectPosition,
     RemoveObjectPacket,
     SwitchRoomPacket,
-    SetFoodPacket
+    SetFoodPacket,
+    AnnounceDeathPacket
 ]
 
 

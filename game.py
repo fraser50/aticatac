@@ -220,6 +220,9 @@ while True:
             elif isinstance(pack, net.SetFoodPacket):
                 food = pack.food
 
+            elif isinstance(pack, net.AnnounceDeathPacket):
+                currentcontrolled = -1
+
         except queue.Empty:
             break
 
