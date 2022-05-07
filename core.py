@@ -151,8 +151,21 @@ class Food(GameObject):
 
 
 class Grave(GameObject):
-    def __init__(self, x, y):
+    def __init__(self, x, y, gp=None):
         super().__init__(x, y)
+        self.gp = gp
+        self.timer = 100 if gp is not None else -1
+
+    def update(self, room):
+        if self.timer >= 0:
+            self.timer -= 1
+
+        if self.timer == 0:
+            p = PlayerObj(self.x, self.y)
+            room.addObject(p)
+            self.gp.setControlled(p)
+            self.gp.food = 101
+
 
     @classmethod
     def generateBasic(cls, x, y, data):

@@ -87,6 +87,11 @@ class GamePlayer():
                 self.tosend.put(net.SendObjectPacket(obj.x, obj.y, core.gobjDict[obj.__class__], obj.getData(), obj.id))
 
 
+    def setControlled(self, gobj):
+        self.currobj = gobj
+        self.tosend.put(net.SendControlledUpdate(gobj.id))
+
+
 class AticAtacGame(threading.Thread):
     def __init__(self):
         super().__init__(name='AticAtacGame')
@@ -168,7 +173,7 @@ class AticAtacGame(threading.Thread):
                     if p.food == 0 and p.currobj is not None:
                         p.food = -1
                         p.room.deleteObject(p.currobj)
-                        p.room.addObject(core.Grave(p.currobj.x, p.currobj.y))
+                        p.room.addObject(core.Grave(p.currobj.x, p.currobj.y, p))
                         p.currobj = None
                         p.tosend.put(net.AnnounceDeathPacket())
 
