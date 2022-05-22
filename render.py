@@ -58,7 +58,15 @@ def renderPlayer(surface, obj):
     rect = playerimg.get_rect()
     rect.left = obj.x
     rect.top = obj.y
-    surface.blit(playerimg, rect)
+
+    if obj.resurrect == 0:
+        surface.blit(playerimg, rect)
+
+    else:
+        h = int((obj.resurrect / 100) * rect.height)
+        arearect = pygame.Rect(0, h, rect.width, rect.height)
+        rect.top += h
+        surface.blit(playerimg, rect, arearect)
 
 
 def renderDoor(surface, obj):

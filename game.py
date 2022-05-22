@@ -237,6 +237,9 @@ while True:
     sl = sorted(currentobjs, key=lambda x: render.renderOrder[x.__class__])
 
     for obj in sl:
+        if isinstance(obj, core.PlayerObj) and obj.resurrect > 0:
+            obj.resurrect -= 1.25
+
         render.renderdict[obj.__class__](screen, obj)
 
         if boxes:

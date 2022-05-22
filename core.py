@@ -90,12 +90,16 @@ class GameObject():
 
 
 class PlayerObj(GameObject):
-    def __init__(self, x, y):
+    def __init__(self, x, y, resurrect=0):
+        self.resurrect = resurrect
         super().__init__(x, y)
 
     @classmethod
     def generateBasic(cls, x, y, data):
-        return PlayerObj(x, y)
+        return PlayerObj(x, y, resurrect=0 if data == 0 else 100)
+
+    def getData(self):
+        return 0 if self.resurrect == 0 else 1
 
 
 class Door(GameObject):
@@ -154,16 +158,20 @@ class Grave(GameObject):
     def __init__(self, x, y, gp=None):
         super().__init__(x, y)
         self.gp = gp
-        self.timer = 100 if gp is not None else -1
+        self.timer = 140 if gp is not None else -1
+        self.gobj = None
 
     def update(self, room):
         if self.timer >= 0:
             self.timer -= 1
 
-        if self.timer == 0:
-            p = PlayerObj(self.x, self.y)
+        if self.timer == 70:
+            p = PlayerObj(self.x, self.y, 100)
             room.addObject(p)
-            self.gp.setControlled(p)
+            self.gobj = p
+
+        elif self.timer == 0:
+            self.gp.setControlled(self.gobj)
             self.gp.food = 101
 
 
