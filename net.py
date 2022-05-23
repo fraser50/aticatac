@@ -53,11 +53,11 @@ class PlayerChangePos(Packet):
         self.rid = rid
 
     def toBytes(self):
-        return struct.pack('!iiH', self.x, self.y, self.rid)
+        return struct.pack('!IIH', self.x, self.y, self.rid)
 
     @classmethod
     def fromBytes(cls, bstr):
-        x, y, rid = struct.unpack('!iiH', bstr)
+        x, y, rid = struct.unpack('!IIH', bstr)
         return PlayerChangePos(x, y, rid)
 
 
@@ -72,11 +72,11 @@ class SendObjectPacket(Packet):
         self.uid = uid
 
     def toBytes(self):
-        return struct.pack('!iibbH', self.x, self.y, self.type, self.data, self.uid)
+        return struct.pack('!IIBBH', self.x, self.y, self.type, self.data, self.uid)
 
     @classmethod
     def fromBytes(cls, bstr):
-        x, y, type, data, uid = struct.unpack('!iibbH', bstr)
+        x, y, type, data, uid = struct.unpack('!IIBBH', bstr)
         return SendObjectPacket(x, y, type, data, uid)
 
 
@@ -103,11 +103,11 @@ class UpdateObjectPosition(Packet):
         self.y = y
 
     def toBytes(self):
-        return struct.pack('!Hii', self.uid, self.x, self.y)
+        return struct.pack('!HII', self.uid, self.x, self.y)
 
     @classmethod
     def fromBytes(cls, bstr):
-        uid, x, y = struct.unpack('!Hii', bstr)
+        uid, x, y = struct.unpack('!HII', bstr)
         return UpdateObjectPosition(uid, x, y)
 
 
@@ -132,11 +132,11 @@ class SwitchRoomPacket(Packet):
         self.roomtype = roomtype
 
     def toBytes(self):
-        return struct.pack('!Hb', self.roomid, self.roomtype)
+        return struct.pack('!HB', self.roomid, self.roomtype)
 
     @classmethod
     def fromBytes(cls, bstr):
-        roomid, roomtype = struct.unpack('!Hb', bstr)
+        roomid, roomtype = struct.unpack('!HB', bstr)
         return SwitchRoomPacket(roomid, roomtype)
 
 
