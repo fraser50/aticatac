@@ -101,6 +101,19 @@ class PlayerObj(GameObject):
     def getData(self):
         return 0 if self.resurrect == 0 else 1
 
+    def update(self, room):
+        for obj in room.roomobjects:
+            if isinstance(obj, Food):
+                prect = SimpleRect(self.x, self.y, 64, 64) # TODO: Don't hardcode the bounding box
+                objrect = SimpleRect(obj.x, obj.y, 64, 64)
+
+                if prect.collides(objrect):
+                    room.deleteObject(obj)
+                    for p in room.players:
+                        if p.currobj == self:
+                            p.food = 101
+                            break
+
 
 class Door(GameObject):
     def __init__(self, x, y, roomtogo, rotation, colour):
